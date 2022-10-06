@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { auth } from "twitter-api-sdk";
 import dotenv from "dotenv";
-import { addPoints, selectUser, twitterVerified } from "../module";
+import { RaffleDb } from "../module";
 import { ApiResults } from "../utils";
 import { RewardPoints } from "../rules";
 
@@ -27,9 +27,12 @@ trouter.use((req, res, next) => {
 trouter.get('/oauth/:wallet', async function (req, res) {
     const wallet = req.params.wallet;
 
-    // TODO: to check if this wallet address is bound
-    // sql.findOne();
-
+    let db = new RaffleDb();
+    let users = await db.selectUser(wallet);
+    if (users.length != 0) {
+        res.send(ApiResults.WALLET_BOUND);
+        return;
+    }
 
     const authUrl = authClient.generateAuthURL({
         state: wallet,
@@ -44,7 +47,8 @@ trouter.get("/oauth/callback", async function (req, res) {
         const { code, state } = req.query;
         const wallet = state as string;
 
-        await twitterVerified(wallet);
+        let db = new RaffleDb();
+        await db.twitterVerified(wallet);
         // TODO: (twitter完成认证之后, 跳转到哪个页面?)
         res.redirect("/user/details");
         // if (state !== STATE) return res.status(500).send("State isn't matching");
@@ -60,17 +64,18 @@ trouter.get("/oauth/callback", async function (req, res) {
 
 trouter.get("/ifollowyou/:wallet", async function (req, res) {
     const wallet = req.params.wallet;
-    const usr = await selectUser(wallet)
-    const isBind= (usr != null);
+    let db = new RaffleDb();
+    const usr = await db.selectUser(wallet)
+    const isBind= (usr.length != 0);
     if (!isBind) {
         res.send(ApiResults.WALLET_NOT_BIND);
         return;
     }
 
-    // TODO: check the friendship of user
+    // TODO: check the friendship of user. Team of TwitterDev has not finished this API for v2 yet.
 
     // add points
-    await addPoints(wallet, RewardPoints.BUNDLE_FOLLOW_TWITTER);
+    await db.addPoints(wallet, RewardPoints.BUNDLE_FOLLOW_TWITTER);
 
     res.send(ApiResults.OK);
 })

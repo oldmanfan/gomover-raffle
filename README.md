@@ -1,7 +1,6 @@
-# TWITTER OAUTH SERVER
+# Backend of GoMover Raffle System
 
-twitter oauth test
 
-## Config
+## Deploy
 
-modify the .env file
+## Usage
