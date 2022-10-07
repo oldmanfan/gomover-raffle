@@ -6,6 +6,9 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "dist/",
+    "sourceMap": true,
+    "sourceRoot": "src/*/**"
   }
 }
