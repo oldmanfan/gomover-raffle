@@ -24,13 +24,14 @@ trouter.use((req, res, next) => {
     next();
 });
 
-trouter.get('/oauth/:wallet', async function (req, res) {
+trouter.get('/verify/:wallet', async function (req, res) {
+	try {
     const wallet = req.params.wallet;
 
     let db = new RaffleDb();
     let users = await db.selectUser(wallet);
-    if (users.length != 0) {
-        res.send(ApiResults.WALLET_BOUND);
+    if (users.length == 0) {
+        res.send(ApiResults.WALLET_NOT_BIND());
         return;
     }
 
@@ -39,7 +40,11 @@ trouter.get('/oauth/:wallet', async function (req, res) {
         code_challenge_method: "s256",
     });
     console.log('authUrl=', authUrl);
-    res.redirect(authUrl);
+//    res.redirect(authUrl);
+res.send(ApiResults.OK(authUrl));
+	} catch(e) {
+	 res.send(ApiResults.UNKNOWN_ERROR(`${e}`));
+}
 });
 
 trouter.get("/oauth/callback", async function (req, res) {
@@ -50,7 +55,9 @@ trouter.get("/oauth/callback", async function (req, res) {
         let db = new RaffleDb();
         await db.twitterVerified(wallet);
         // TODO: (twitter完成认证之后, 跳转到哪个页面?)
-        res.redirect("/user/details");
+//        res.redirect("/user/details");
+	console.log(`twitter verify callback ${code}, ${state}`);
+	res.send(ApiResults.OK());
         // if (state !== STATE) return res.status(500).send("State isn't matching");
 
         // const { token } = await authClient.requestAccessToken(code as string);
@@ -59,6 +66,7 @@ trouter.get("/oauth/callback", async function (req, res) {
 
     } catch (error) {
         console.log(error);
+	 res.send(ApiResults.UNKNOWN_ERROR(`${error}`));
     }
 });
 
@@ -68,7 +76,7 @@ trouter.get("/ifollowyou/:wallet", async function (req, res) {
     const usr = await db.selectUser(wallet)
     const isBind= (usr.length != 0);
     if (!isBind) {
-        res.send(ApiResults.WALLET_NOT_BIND);
+        res.send(ApiResults.WALLET_NOT_BIND());
         return;
     }
 
@@ -77,7 +85,7 @@ trouter.get("/ifollowyou/:wallet", async function (req, res) {
     // add points
     await db.addPoints(wallet, RewardPoints.BUNDLE_FOLLOW_TWITTER);
 
-    res.send(ApiResults.OK);
+    res.send(ApiResults.OK());
 })
 
 export {

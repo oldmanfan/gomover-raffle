@@ -11,6 +11,7 @@ wrouter.use((req, res, next) => {
 });
 
 wrouter.post('/bind', async function (req, res) {
+	try {
     const form = req.body as BindForm;
     const utils = new BindFormUtils(form);
     let success = utils.verifySignature();
@@ -27,6 +28,9 @@ wrouter.post('/bind', async function (req, res) {
     }
 
     res.send(ApiResults.OK());
+	} catch(e) {
+	res.send(ApiResults.UNKNOWN_ERROR(`${e}`));
+	}
 });
 
 export {
