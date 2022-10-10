@@ -25,21 +25,25 @@ trouter.use((req, res, next) => {
 });
 
 trouter.get('/oauth/:wallet', async function (req, res) {
-    const wallet = req.params.wallet;
+    try {
+        const wallet = req.params.wallet;
 
-    let db = new RaffleDb();
-    let users = await db.selectUser(wallet);
-    if (users.length != 0) {
-        res.send(ApiResults.WALLET_BOUND);
-        return;
+        let db = new RaffleDb();
+        let users = await db.selectUser(wallet);
+        if (users.length != 0) {
+            res.send(ApiResults.WALLET_BOUND);
+            return;
+        }
+
+        const authUrl = authClient.generateAuthURL({
+            state: wallet,
+            code_challenge_method: "s256",
+        });
+        console.log('authUrl=', authUrl);
+        res.redirect(authUrl);
+    } catch (e) {
+        res.send(ApiResults.UNKNOWN_ERROR(`${e}`));
     }
-
-    const authUrl = authClient.generateAuthURL({
-        state: wallet,
-        code_challenge_method: "s256",
-    });
-    console.log('authUrl=', authUrl);
-    res.redirect(authUrl);
 });
 
 trouter.get("/oauth/callback", async function (req, res) {
@@ -57,27 +61,32 @@ trouter.get("/oauth/callback", async function (req, res) {
         // console.log('oauth callback token=', token);
         // res.redirect("/tweets");
 
-    } catch (error) {
-        console.log(error);
+    } catch (e) {
+        console.log(e);
+        res.send(ApiResults.UNKNOWN_ERROR(`${e}`));
     }
 });
 
 trouter.get("/ifollowyou/:wallet", async function (req, res) {
-    const wallet = req.params.wallet;
-    let db = new RaffleDb();
-    const usr = await db.selectUser(wallet)
-    const isBind= (usr.length != 0);
-    if (!isBind) {
-        res.send(ApiResults.WALLET_NOT_BIND);
-        return;
+    try {
+        const wallet = req.params.wallet;
+        let db = new RaffleDb();
+        const usr = await db.selectUser(wallet)
+        const isBind = (usr.length != 0);
+        if (!isBind) {
+            res.send(ApiResults.WALLET_NOT_BIND);
+            return;
+        }
+
+        // TODO: check the friendship of user. Team of TwitterDev has not finished this API for v2 yet.
+
+        // add points
+        await db.addPoints(wallet, RewardPoints.BUNDLE_FOLLOW_TWITTER);
+
+        res.send(ApiResults.OK);
+    } catch (e) {
+        res.send(ApiResults.UNKNOWN_ERROR(`${e}`));
     }
-
-    // TODO: check the friendship of user. Team of TwitterDev has not finished this API for v2 yet.
-
-    // add points
-    await db.addPoints(wallet, RewardPoints.BUNDLE_FOLLOW_TWITTER);
-
-    res.send(ApiResults.OK);
 })
 
 export {

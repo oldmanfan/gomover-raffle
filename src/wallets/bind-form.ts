@@ -36,8 +36,10 @@ export class BindFormUtils {
     }
 
     verifySignature(): boolean {
-        const message = this.toString();
+        const message = this.hash();
+        console.log(`verify: ${message}  ${this.form.signature}`)
         const signer = ethers.utils.verifyMessage(message, this.form.signature);
+        console.log('signer: ', signer);
         return signer === this.form.keyWallet;
     }
 }
