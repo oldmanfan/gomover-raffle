@@ -25,26 +25,26 @@ trouter.use((req, res, next) => {
 });
 
 trouter.get('/verify/:wallet', async function (req, res) {
-	try {
-    const wallet = req.params.wallet;
+    try {
+        const wallet = req.params.wallet;
 
-    let db = new RaffleDb();
-    let users = await db.selectUser(wallet);
-    if (users.length == 0) {
-        res.send(ApiResults.WALLET_NOT_BIND());
-        return;
+        let db = new RaffleDb();
+        let users = await db.selectUser(wallet);
+        if (users.length == 0) {
+            res.send(ApiResults.WALLET_NOT_BIND());
+            return;
+        }
+
+        const authUrl = authClient.generateAuthURL({
+            state: wallet,
+            code_challenge_method: "s256",
+        });
+        console.log('authUrl=', authUrl);
+        //    res.redirect(authUrl);
+        res.send(ApiResults.OK(authUrl));
+    } catch (e) {
+        res.send(ApiResults.UNKNOWN_ERROR(`${e}`));
     }
-
-    const authUrl = authClient.generateAuthURL({
-        state: wallet,
-        code_challenge_method: "s256",
-    });
-    console.log('authUrl=', authUrl);
-//    res.redirect(authUrl);
-res.send(ApiResults.OK(authUrl));
-	} catch(e) {
-	 res.send(ApiResults.UNKNOWN_ERROR(`${e}`));
-}
 });
 
 trouter.get("/oauth/callback", async function (req, res) {
@@ -55,9 +55,9 @@ trouter.get("/oauth/callback", async function (req, res) {
         let db = new RaffleDb();
         await db.twitterVerified(wallet);
         // TODO: (twitter完成认证之后, 跳转到哪个页面?)
-//        res.redirect("/user/details");
-	console.log(`twitter verify callback ${code}, ${state}`);
-	res.send(ApiResults.OK());
+        //        res.redirect("/user/details");
+        console.log(`twitter verify callback ${code}, ${state}`);
+        res.send(ApiResults.OK());
         // if (state !== STATE) return res.status(500).send("State isn't matching");
 
         // const { token } = await authClient.requestAccessToken(code as string);
@@ -66,7 +66,7 @@ trouter.get("/oauth/callback", async function (req, res) {
 
     } catch (error) {
         console.log(error);
-	 res.send(ApiResults.UNKNOWN_ERROR(`${error}`));
+        res.send(ApiResults.UNKNOWN_ERROR(`${error}`));
     }
 });
 
@@ -74,7 +74,7 @@ trouter.get("/ifollowyou/:wallet", async function (req, res) {
     const wallet = req.params.wallet;
     let db = new RaffleDb();
     const usr = await db.selectUser(wallet)
-    const isBind= (usr.length != 0);
+    const isBind = (usr.length != 0);
     if (!isBind) {
         res.send(ApiResults.WALLET_NOT_BIND());
         return;

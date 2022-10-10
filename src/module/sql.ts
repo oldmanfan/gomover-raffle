@@ -16,15 +16,15 @@ export class MysqlWrapper {
     conn: any;
 
     async connect(): Promise<void> {
-	/*
-        this.conn = await mysql.createConnection({
-            host,
-            user,
-            password,
-            database,
-            rowsAsArray: true
-        });
-       */
+        /*
+            this.conn = await mysql.createConnection({
+                host,
+                user,
+                password,
+                database,
+                rowsAsArray: true
+            });
+           */
 
         this.conn = await mysql.createConnection({
             host: 'localhost',
@@ -33,10 +33,10 @@ export class MysqlWrapper {
             database: "raffle",
             rowsAsArray: true,
         });
-	console.log('createConnection successfully');
+        console.log('createConnection successfully');
 
         await this.conn.connect();
-	console.log('connect successfully')
+        console.log('connect successfully')
     }
 
     async disconnect() {
@@ -51,8 +51,8 @@ export class MysqlWrapper {
     }
 
     async insertUser(user: User, initPoint: number = 0) {
-        let  addSql = 'INSERT INTO users(Id, key_wallet, twitter, discord, evm_wallets, apt_wallets, twitter_verified, discord_verified, invite_code, total_points) VALUES(0,?,?,?,?,?,?,?,?,?)';
-        let  addSqlParams = [
+        let addSql = 'INSERT INTO users(Id, key_wallet, twitter, discord, evm_wallets, apt_wallets, twitter_verified, discord_verified, invite_code, total_points) VALUES(0,?,?,?,?,?,?,?,?,?)';
+        let addSqlParams = [
             user.keyWallet,
             user.twitter,
             user.discord,

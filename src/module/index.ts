@@ -41,42 +41,6 @@ export class RaffleDb {
     }
 }
 
-// const sqlIns = new MysqlWrapper(host, user, password, db);
-
-// export async function inint_sql() {
-//     await sqlIns.connect();
-// }
-
-// export async function disconnect_sql() {
-//     await sqlIns.disconnect();
-// }
-
-// export async function insertUser(form: BindForm): Promise<boolean> {
-//     let usr = BindFormToUser(form);
-//     let point = 0;
-//     if (form.aptWallets.length >= 1) {
-//         point += RewardPoints.CONNECT_APTOS_WALLET;
-
-//         if (form.evmWallets.length == 1) point += RewardPoints.CONNECT_EVM_WALLET_BY_APTOS_WALELT;
-//         else if (form.evmWallets.length >= 2) point += RewardPoints.CONNECT_2EVM_WALLET_BY_APTOS_WALLET;
-//     }
-
-//     return await sqlIns.insertUser(usr, point);
-// }
-
-// export async function addPoints(keyWallet: string, point: number) {
-//     await sqlIns.addPoints(keyWallet, point);
-// }
-
-// export async function twitterVerified(keyWallet: string) {
-//     await sqlIns.twitterVerified(keyWallet, RewardPoints.VERIFY_TWITTER);
-// }
-
-// export async function selectUser(keyWallet: string): Promise<User | null> {
-//     // TODO: 查询用户
-//     return null;
-// }
-
 function BindFormToUser(form: BindForm): User {
     return {
         keyWallet: form.keyWallet,
