@@ -1,31 +1,33 @@
 
 import { RaffleDb } from "../src/module";
+import { UserProfile } from "../src/module/UserProfile";
 
 async function main() {
-    // const form =  {
-    //     keyWallet: "0x1111112",
-    //     invitedCode: "",
-    //     twitter: "@NefarioD",
-    //     discord: "@oldmanfan",
-    //     evmWallets: ["0x222221", "0x222222", "0x2223"],
-    //     aptWallets: ["0x333331", "0x333332", "0x3333"],
+    let p: UserProfile = {
+        wallet: "0x186d3e2402e74cd62A93163f6e520FFb803DD249",
+        type: "evm",
+        twitter: "NefarioD",
+        discord: "",
+        inviteCode: "ABEF87ED9087",
+        invitedUser: 0,
+        totalPoints: 140
+    };
 
-    //     signature: ""
-    // };
+    let raffle = new RaffleDb();
+    await raffle.insertUser(p);
 
-    // let raffle = new RaffleDb();
-    // await raffle.insertUser(form);
+    let u = await raffle.selectUser(p.wallet);
+    console.log('useres: ', JSON.stringify(u));
 
-    // await raffle.twitterVerified(form.keyWallet);
+    await raffle.addPoints(p.wallet, 30);
 
-    // await raffle.addPoints(form.keyWallet, 30);
+    u = await raffle.selectUser(p.wallet);
+    console.log('useres2: ', JSON.stringify(u));
 
-    // let u = await raffle.selectUser(form.keyWallet);
-    // console.log('useres: ', JSON.stringify(u));
+    await raffle.inviteSuccess(p.inviteCode, 20);
 
-    // u = await raffle.selectUser('0x11111134');
-    // console.log('not existed: ', JSON.stringify(u));
-
+    u = await raffle.selectUser(p.wallet);
+    console.log('useres3: ', JSON.stringify(u));
 }
 
 main();

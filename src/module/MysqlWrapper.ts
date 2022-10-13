@@ -16,7 +16,6 @@ export class MysqlWrapper {
     conn: any;
 
     async connect(): Promise<void> {
-        /*
             this.conn = await mysql.createConnection({
                 host,
                 user,
@@ -24,19 +23,16 @@ export class MysqlWrapper {
                 database,
                 rowsAsArray: true
             });
-           */
 
-        this.conn = await mysql.createConnection({
-            host: 'localhost',
-            user: 'raffle',
-            password: 'mkcweNUIAEfini374823hdkasfUIY*Y',
-            database: "raffle",
-            rowsAsArray: true,
-        });
-        console.log('createConnection successfully');
+        // this.conn = await mysql.createConnection({
+        //     host: 'localhost',
+        //     user: 'raffle',
+        //     password: 'mkcweNUIAEfini374823hdkasfUIY*Y',
+        //     database: "raffle",
+        //     rowsAsArray: true,
+        // });
 
         await this.conn.connect();
-        console.log('connect successfully')
     }
 
     async disconnect() {

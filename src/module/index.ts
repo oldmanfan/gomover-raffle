@@ -5,10 +5,16 @@ import { DbArray2UserArray, UserProfile } from "./UserProfile";
 export class RaffleDb {
     async insertUser(p: UserProfile): Promise<boolean> {
         let db = new MysqlWrapper();
-        await db.connect();
 
-        let isExisted = (await db.execute('select count(wallet) as walletCount from users where wallet = ?', [p.wallet])).walletCount != 0;
-        if (isExisted) return false;
+        await db.connect();
+        let u = (await db.execute('select count(wallet) as walletCount from users where wallet = ?', [p.wallet]));
+        // console.log(`u: ${JSON.stringify(u)}`);
+
+        let isExisted = u[0][0] != 0;
+        if (isExisted) {
+            await db.disconnect();
+            return false;
+        }
 
         let r = await db.insertUser(p);
         await db.disconnect();

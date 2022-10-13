@@ -25,6 +25,6 @@ export function CalculateUserPoints(tuser: TwitterUser): number {
 }
 
 export function ReferralCode(wallet: string): string {
-    return referralCodeGenerator.custom('uppercase', 32, 12, 'temitope');
+    return referralCodeGenerator.custom('uppercase', 8, 12, wallet);
 }
 
