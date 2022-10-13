@@ -1,7 +1,6 @@
 
 import express from "express";
 import { trouter } from "./twitter";
-import { wrouter } from "./wallets";
 
 const app = express();
 
@@ -9,7 +8,6 @@ app.use(express.json());
 
 app.use('/twitter', trouter);
 
-app.use('/wallet', wrouter);
 
 /*
 app.use(function (req, res, next) {

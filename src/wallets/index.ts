@@ -1,53 +1,70 @@
-import { Router } from "express";
-import { RaffleDb } from "../module";
-import { ApiResults } from "../utils";
+// import { Router } from "express";
+// import { RaffleDb } from "../module";
+// import { ApiResults } from "../utils";
 
-import { BindForm, BindFormUtils, } from "./bind-form";
+import { EvmWalletType, WalletVerifyParams } from "./common";
+import { EvmVerifier } from "./evm-wallet";
 
-let wrouter = Router();
+// import { BindForm, BindFormUtils, } from "./bind-form";
 
-wrouter.use((req, res, next) => {
-    next();
-});
+// let walletRouter = Router();
 
-wrouter.post('/bind', async function (req, res) {
-    try {
-        const form = req.body as BindForm;
-        const utils = new BindFormUtils(form);
-        let success = utils.verifySignature();
-        if (!success) {
-            res.send(ApiResults.SIGNATURE_ERROR());
-            return;
+// walletRouter.use((req, res, next) => {
+//     next();
+// });
+
+// walletRouter.post('/bind', async function (req, res) {
+//     try {
+//         const form = req.body as BindForm;
+//         const utils = new BindFormUtils(form);
+//         let success = utils.verifySignature();
+//         if (!success) {
+//             res.send(ApiResults.SIGNATURE_ERROR());
+//             return;
+//         }
+
+//         let db = new RaffleDb();
+//         success = await db.insertUser(form);
+//         if (!success) {
+//             res.send(ApiResults.DB_ERROR());
+//             return;
+//         }
+
+//         res.send(ApiResults.OK());
+//     } catch (e) {
+//         res.send(ApiResults.UNKNOWN_ERROR(`${e}`));
+//     }
+// });
+
+// walletRouter.get('/query/:wallet', async function(req, res) {
+//     try {
+//         const wallet = req.params.wallet;
+//         let db = new RaffleDb();
+//         let users = await db.selectUser(wallet);
+//         if (users.length == 0) {
+//             res.send(ApiResults.WALLET_NOT_BIND());
+//         } else {
+//             res.send(ApiResults.OK(JSON.stringify(users[0])));
+//         }
+//     } catch (e) {
+//         res.send(ApiResults.UNKNOWN_ERROR(`${e}`));
+//     }
+// });
+
+// export {
+//     walletRouter as wrouter
+// }
+
+export function VerifyWalletSinagure(p: string): boolean {
+    const verifyParam = JSON.parse(p) as WalletVerifyParams;
+
+        if (verifyParam.type === EvmWalletType) {
+            const verifier = EvmVerifier.fromObj(verifyParam);
+            return verifier.verifySignature();
         }
 
-        let db = new RaffleDb();
-        success = await db.insertUser(form);
-        if (!success) {
-            res.send(ApiResults.DB_ERROR());
-            return;
-        }
-
-        res.send(ApiResults.OK());
-    } catch (e) {
-        res.send(ApiResults.UNKNOWN_ERROR(`${e}`));
-    }
-});
-
-wrouter.get('/query/:wallet', async function(req, res) {
-    try {
-        const wallet = req.params.wallet;
-        let db = new RaffleDb();
-        let users = await db.selectUser(wallet);
-        if (users.length == 0) {
-            res.send(ApiResults.WALLET_NOT_BIND());
-        } else {
-            res.send(ApiResults.OK(JSON.stringify(users[0])));
-        }
-    } catch (e) {
-        res.send(ApiResults.UNKNOWN_ERROR(`${e}`));
-    }
-});
-
-export {
-    wrouter
+        return false;
 }
+
+export * from "./evm-wallet";
+export * from "./common";

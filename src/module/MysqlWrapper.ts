@@ -1,4 +1,4 @@
-import { User } from "./User";
+import { UserProfile } from "./UserProfile";
 
 // get the client
 const mysql = require('mysql2/promise');
@@ -46,21 +46,19 @@ export class MysqlWrapper {
     async execute(sql: string, params: any[]) {
         await this.connect();
         let result = await this.conn.execute(sql, params);
-        await this.disconnect();
+        // await this.disconnect();
         return result;
     }
 
-    async insertUser(user: User, initPoint: number = 0) {
-        let addSql = 'INSERT INTO users(Id, key_wallet, twitter, discord, evm_wallets, apt_wallets, twitter_verified, discord_verified, invite_code, total_points) VALUES(0,?,?,?,?,?,?,?,?,?)';
+    async insertUser(user: UserProfile, initPoint: number = 0) {
+        let addSql = 'INSERT INTO users(Id, wallet, type, twitter, discord, invite_code, invited_user, total_points) VALUES(0,?,?,?,?,?,?,?)';
         let addSqlParams = [
-            user.keyWallet,
+            user.wallet,
+            user.type,
             user.twitter,
             user.discord,
-            user.evmWallets.join(","),
-            user.aptWallets.join(","),
-            0,
-            0,
-            "",
+            "", // inviteCode
+            0, // invitedUser
             initPoint
         ];
 
@@ -68,28 +66,14 @@ export class MysqlWrapper {
     }
 
     async updateUser(keyWallet: string, column: string, value: string | number | string[]) {
-        let modSql = `UPDATE users SET ${column} = ? WHERE key_wallet = ?`;
+        let modSql = `UPDATE users SET ${column} = ? WHERE wallet = ?`;
         let modSqlParams = [value, keyWallet];
 
         return await this.execute(modSql, modSqlParams);
     }
 
     async addPoints(keyWallet: string, point: number) {
-        let modSql = `UPDATE users SET total_points = total_points + ${point} WHERE key_wallet = ?`;
-        let modSqlParams = [keyWallet];
-
-        return await this.execute(modSql, modSqlParams);
-    }
-
-    async twitterVerified(keyWallet: string, point: number) {
-        let modSql = `UPDATE users SET twitter_verified = 1, total_points = total_points + ${point} WHERE key_wallet = ?`;
-        let modSqlParams = [keyWallet];
-
-        return await this.execute(modSql, modSqlParams);
-    }
-
-    async discordVerified(keyWallet: string, point: number) {
-        let modSql = `UPDATE users SET discord_verified = 1, total_points = total_points + ${point} WHERE key_wallet = ?`;
+        let modSql = `UPDATE users SET total_points = total_points + ${point} WHERE wallet = ?`;
         let modSqlParams = [keyWallet];
 
         return await this.execute(modSql, modSqlParams);
