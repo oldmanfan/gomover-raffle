@@ -4,13 +4,17 @@ import { WalletVerifyParams } from "./common";
 export class EvmVerifier {
 
     public static fromObj(param: WalletVerifyParams) : EvmVerifier {
-        return new EvmVerifier(param.raw, param.wallet, param.signature);
+        return new EvmVerifier(param);
     }
 
-    private constructor(readonly raw: string, readonly wallet: string, readonly signature: string) {}
+    private constructor(readonly verifyParam: WalletVerifyParams) {}
+
+    toString(): string {
+        return `${this.verifyParam.raw}-${this.verifyParam.inviteCode}-${this.verifyParam.type}`;
+    }
 
     verifySignature(): boolean {
-        const signer = ethers.utils.verifyMessage(this.raw, this.signature);
-        return signer === this.wallet;
+        const signer = ethers.utils.verifyMessage(this.toString(), this.verifyParam.signature);
+        return signer === this.verifyParam.wallet;
     }
 }

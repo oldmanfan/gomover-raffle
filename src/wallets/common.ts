@@ -6,6 +6,7 @@ export type WalletType = 'evm' | 'aptos';
 
 export interface WalletVerifyParams {
     raw: string;
+    inviteCode: string;
     wallet: string;
     type: WalletType;
     signature: string;

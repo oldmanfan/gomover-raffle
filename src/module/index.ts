@@ -1,34 +1,47 @@
-import { RewardPoints } from "../rules";
 import { MysqlWrapper } from "./MysqlWrapper";
 import { DbArray2UserArray, UserProfile } from "./UserProfile";
 
 
 export class RaffleDb {
     async insertUser(p: UserProfile): Promise<boolean> {
+        let db = new MysqlWrapper();
+        await db.connect();
 
-        let isExisted = (await this.selectUser(p.wallet)).length != 0;
+        let isExisted = (await db.execute('select count(wallet) as walletCount from users where wallet = ?', [p.wallet])).walletCount != 0;
         if (isExisted) return false;
 
-        let db = new MysqlWrapper();
-        let point = RewardPoints.VERIFY_TWITTER;
-        if (p.inviteCode.length > 0) {
-            // db.
-        }
-        let r = await db.insertUser(p, point);
+        let r = await db.insertUser(p);
         await db.disconnect();
         return r;
     }
 
     async addPoints(keyWallet: string, point: number) {
         let db = new MysqlWrapper();
+        await db.connect();
         await db.addPoints(keyWallet, point);
+        await db.disconnect();
+    }
+
+    async inviteSuccess(inviteCode: string, point: number) {
+        let db = new MysqlWrapper();
+        await db.connect();
+        await db.execute(
+            `UPDATE users SET invited_user = invited_user + 1, total_points = total_points + ${point} WHERE invite_code = ?`,
+            [inviteCode]
+        );
+        await db.disconnect();
     }
 
     async selectUser(keyWallet: string): Promise<UserProfile[]> {
         let db = new MysqlWrapper();
+        await db.connect();
+
         let sql = 'SELECT * from users where wallet = ?';
         let params = [keyWallet];
         let rows = await db.select(sql, params) as any[];
+
+        await db.disconnect();
+
         return DbArray2UserArray(rows[0]);
     }
 }

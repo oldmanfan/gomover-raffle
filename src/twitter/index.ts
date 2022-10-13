@@ -3,8 +3,10 @@ import Client, { auth } from "twitter-api-sdk";
 import dotenv from "dotenv";
 import { RaffleDb } from "../module";
 import { ApiResults } from "../utils";
+import { VerifyWalletSinagure, WalletVerifyParams } from "../wallets";
+import { CalculateUserPoints, ReferralCode, TwitterUser } from "./user";
+import { UserProfile } from "../module/UserProfile";
 import { RewardPoints } from "../rules";
-import { VerifyWalletSinagure } from "../wallets";
 
 dotenv.config();
 
@@ -33,7 +35,7 @@ twitterRouter.post('/verify', async function (req, res) {
         }
 
         const authUrl = authClient.generateAuthURL({
-            state: JSON.stringify(req.body),
+            state: encodeURIComponent(JSON.stringify(req.body)),
             code_challenge_method: "s256",
         });
         console.log('authUrl=', authUrl);
@@ -48,18 +50,44 @@ twitterRouter.get("/oauth/callback", async function (req, res) {
     try {
         const { code, state } = req.query;
 
-        if (!VerifyWalletSinagure(state as string)) {
+        let verifyParamsStr = decodeURIComponent(state as string);
+        if (!VerifyWalletSinagure(verifyParamsStr)) {
             res.send(ApiResults.SIGNATURE_ERROR());
             return;
         }
 
         await authClient.requestAccessToken(code as string);
 
-        let u = await client.users.findMyUser();
-// TODO: to fetch user info from twitter
-        console.log("findMyUser: ", JSON.stringify(u));
-        // let db = new RaffleDb();
-        // await db.twitterVerified(wallet);
+        let response = await client.users.findMyUser({
+            "user.fields": ["id", "name", "username", "public_metrics", "verified"]
+        });
+        let tuser = response["data"] as TwitterUser;
+        let rawMessage = JSON.parse(verifyParamsStr) as WalletVerifyParams;
+        // console.log("findMyUser: ", JSON.stringify(tuser));
+
+        let totalPoints = CalculateUserPoints(tuser);
+        let referralCode = ReferralCode(rawMessage.wallet);
+
+        let profile: UserProfile = {
+            wallet: rawMessage.wallet,
+            type: rawMessage.type,
+            twitter: tuser.username,
+            discord: "",
+
+            inviteCode: referralCode, // 生成的邀请码, 可供其它人使用
+            invitedUser: 0, // 已经邀请了多少人
+
+            totalPoints:  totalPoints // 获得的总points
+        };
+
+        let db = new RaffleDb();
+        await db.insertUser(profile);
+
+        // 发送邀请奖励
+        if (rawMessage.inviteCode.length != 0) {
+            await db.inviteSuccess(rawMessage.inviteCode, RewardPoints.INVITAT_USER);
+        }
+
         res.send(ApiResults.OK());
     } catch (error) {
         res.send(ApiResults.UNKNOWN_ERROR(`${error}`));

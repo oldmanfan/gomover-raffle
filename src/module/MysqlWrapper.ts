@@ -44,22 +44,22 @@ export class MysqlWrapper {
     }
 
     async execute(sql: string, params: any[]) {
-        await this.connect();
+        // await this.connect();
         let result = await this.conn.execute(sql, params);
         // await this.disconnect();
         return result;
     }
 
-    async insertUser(user: UserProfile, initPoint: number = 0) {
+    async insertUser(user: UserProfile) {
         let addSql = 'INSERT INTO users(Id, wallet, type, twitter, discord, invite_code, invited_user, total_points) VALUES(0,?,?,?,?,?,?,?)';
         let addSqlParams = [
             user.wallet,
             user.type,
             user.twitter,
             user.discord,
-            "", // inviteCode
-            0, // invitedUser
-            initPoint
+            user.inviteCode,
+            user.invitedUser,
+            user.totalPoints
         ];
 
         return await this.execute(addSql, addSqlParams);
