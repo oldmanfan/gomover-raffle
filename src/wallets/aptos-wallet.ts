@@ -11,7 +11,10 @@ export class AptosVerifier {
     private constructor(readonly verifyParam: WalletVerifyParams) {}
 
     toString(): string {
-        return `${this.verifyParam.raw}-${this.verifyParam.inviteCode}-${this.verifyParam.type}`;
+        // "APTOS\nmessage: 123456--aptos\nnonce: 123456"
+
+        let msg = `${this.verifyParam.raw}-${this.verifyParam.inviteCode}-${this.verifyParam.type}`;
+        return `APTOS\nmessage: ${msg}\nnonce: ${this.verifyParam.raw}`;
     }
 
     verifySignature(): boolean {

@@ -4,8 +4,10 @@ import { UserProfile } from "./UserProfile";
 const mysql = require('mysql2/promise');
 
 import dotenv from "dotenv";
+import path from "path";
 
-dotenv.config();
+dotenv.config({path: path.join(__dirname, "../.env")});
+
 
 const host = process.env.MYSQL_HOST || "127.0.0.1"
 const user = process.env.MYSQL_USER || "root";
