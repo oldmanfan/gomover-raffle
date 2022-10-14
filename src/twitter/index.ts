@@ -7,8 +7,9 @@ import { VerifyWalletSinagure, WalletVerifyParams } from "../wallets";
 import { CalculateUserPoints, ReferralCode, TwitterUser } from "./user";
 import { UserProfile } from "../module/UserProfile";
 import { RewardPoints } from "../rules";
+import path from "path";
 
-dotenv.config();
+dotenv.config({path: path.join(__dirname, "../.env")});
 
 let twitterRouter = Router();
 
@@ -28,8 +29,7 @@ twitterRouter.use((req, res, next) => {
 
 twitterRouter.post('/verify', async function (req, res) {
     try {
-
-        if (!VerifyWalletSinagure(req.body)) {
+        if (!VerifyWalletSinagure(JSON.stringify(req.body))) {
             res.send(ApiResults.SIGNATURE_ERROR());
             return;
         }
