@@ -13,16 +13,10 @@ dotenv.config({ path: path.join(__dirname, "../.env") });
 
 let discordRouter = Router();
 
-// const authClient = new auth.OAuth2User({
-//     client_id: process.env.TWITTER_CLIENT_ID || "",
-//     client_secret: process.env.TWITTER_CLIENT_SECRET || "",
-//     callback: process.env.TWITTER_OAUTH_CALLBACK || "",
-//     scopes: ["tweet.read", "users.read"],
-// });
 
-const url = 'https://discord.com/api/oauth2/authorize?client_id=1033398142487498803&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fdiscord%2Foauth%2Fcallback&response_type=code&scope=identify';
+const url = 'https://discord.com/api/oauth2/authorize?client_id=1033398142487498803&redirect_uri=https%3A%2F%2Fraffle.gomover.xyz%2Fdiscord%2Foauth%2Fcallback&response_type=code&scope=identify';
 const client_id = process.env.DISCORD_CLIENT_ID || "1033398142487498803";
-const client_secret = process.env.DISCORD_CLIENT_SECRET || "WWq05yGIEfJjA72uq5yLU2-qwsiIHov4";
+const client_secret = process.env.DISCORD_CLIENT_SECRET || "";
 const callback = process.env.DISCORD_CLIENT_CALLBACK || "http://localhost:3000/discord/oauth/callback";
 
 async function getAccessToken(code: string) {
