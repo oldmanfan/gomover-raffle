@@ -6,6 +6,7 @@
 |用途|URL|方法|参数|
 | --- | --- | --- | --- |
 | 绑定twitter | /twitter/verify | POST | WalletVerifyParams |
+| 绑定discord | /discord/verify | POST | WalletVerifyParams |
 | 查询用户 | /wallet/query/{wallet} | GET | UserProfile |
 
 ### 参数说明

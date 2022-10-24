@@ -81,10 +81,17 @@ twitterRouter.get("/oauth/callback", async function (req, res) {
         };
 
         let db = new RaffleDb();
-        await db.insertUser(profile);
+        let users = await db.selectUser(profile.wallet);
+        if (users.length === 0) {
+            await db.insertUser(profile);
+        } else {
+            profile.discord = users[0].discord;
+            profile.totalPoints += users[0].totalPoints;
+            await db.updateUser(profile);
+        }
 
         // 发送邀请奖励
-        if (rawMessage.inviteCode.length != 0) {
+        if (users[0].inviteCode.length == 0 && rawMessage.inviteCode.length != 0) {
             await db.inviteSuccess(rawMessage.inviteCode, RewardPoints.INVITAT_USER);
         }
 

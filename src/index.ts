@@ -1,5 +1,6 @@
 
 import express from "express";
+import { discordRouter } from "./discord";
 import { trouter } from "./twitter";
 import { walletRouter } from "./wallets/router";
 
@@ -8,7 +9,7 @@ const app = express();
 app.use(express.json());
 
 app.use('/twitter', trouter);
-
+app.use('/discord', discordRouter);
 app.use('/wallet', walletRouter);
 /*
 app.use(function (req, res, next) {
