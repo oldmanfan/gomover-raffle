@@ -20,6 +20,8 @@ const authClient = new auth.OAuth2User({
     scopes: ["tweet.read", "users.read"],
 });
 
+console.log(`twitter setting: ${process.env.TWITTER_CLIENT_ID} ${process.env.TWITTER_CLIENT_SECRET} ${process.env.TWITTER_OAUTH_CALLBACK}`);
+
 const client = new Client(authClient);
 
 twitterRouter.use((req, res, next) => {

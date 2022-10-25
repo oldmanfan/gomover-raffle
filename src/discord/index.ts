@@ -19,6 +19,8 @@ const client_id = process.env.DISCORD_CLIENT_ID || "1033398142487498803";
 const client_secret = process.env.DISCORD_CLIENT_SECRET || "";
 const callback = process.env.DISCORD_CLIENT_CALLBACK || "http://localhost:3000/discord/oauth/callback";
 
+console.log(`discord setting: ${client_id} ${client_secret} ${callback}`);
+
 async function getAccessToken(code: string) {
     var axios = require('axios');
     var qs = require('qs');

@@ -14,6 +14,8 @@ const user = process.env.MYSQL_USER || "root";
 const password = process.env.MYSQL_PASSWORD || "123456";
 const database = process.env.MYSQL_DB || "unimal_raffle";
 
+console.log(`mysql setting: ${host} ${user} ${password} ${database}`);
+
 export class MysqlWrapper {
     conn: any;
 
@@ -25,14 +27,6 @@ export class MysqlWrapper {
                 database,
                 rowsAsArray: true
             });
-
-        // this.conn = await mysql.createConnection({
-        //     host: 'localhost',
-        //     user: 'raffle',
-        //     password: 'mkcweNUIAEfini374823hdkasfUIY*Y',
-        //     database: "raffle",
-        //     rowsAsArray: true,
-        // });
 
         await this.conn.connect();
     }
