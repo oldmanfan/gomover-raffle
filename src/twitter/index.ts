@@ -93,7 +93,8 @@ twitterRouter.get("/oauth/callback", async function (req, res) {
         }
 
         // 发送邀请奖励
-        if (users[0].inviteCode.length == 0 && rawMessage.inviteCode.length != 0) {
+        if (rawMessage.inviteCode.length != 0 &&
+            (users.length == 0 || users[0].inviteCode.length == 0 )) {
             await db.inviteSuccess(rawMessage.inviteCode, RewardPoints.INVITAT_USER);
         }
 

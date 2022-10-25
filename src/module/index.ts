@@ -5,8 +5,10 @@ import { DbArray2UserArray, UserProfile } from "./UserProfile";
 export class RaffleDb {
     async updateUser(p: UserProfile): Promise<boolean> {
         let db = new MysqlWrapper();
-        let sql = `UPDATE users set twitter = ${p.twitter}, discord = ${p.discord}, invite_code = ${p.inviteCode}, total_points = ${p.totalPoints} WHERE wallet = ?`;
-        let r = await db.execute(sql, [p.wallet]);
+        await db.connect()
+        let sql = `UPDATE users SET twitter = ?, discord = ?, invite_code = ?, total_points = ? WHERE wallet = ?`;
+        let r = await db.execute(sql, [p.twitter, p.discord, p.inviteCode, p.totalPoints, p.wallet]);
+        await db.disconnect();
         return r;
     }
 

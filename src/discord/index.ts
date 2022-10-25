@@ -3,7 +3,6 @@ import dotenv from "dotenv";
 import { ApiResults } from "../utils";
 import { VerifyWalletSinagure, WalletVerifyParams } from "../wallets";
 import path from "path";
-import fetch, { Headers } from "cross-fetch";
 import { UserProfile } from "../module/UserProfile";
 import { RewardPoints } from "../rules";
 import { ReferralCode } from "../twitter/user";
@@ -120,13 +119,12 @@ discordRouter.get("/oauth/callback", async function (req, res) {
         }
 
         // 发送邀请奖励
-        if (users[0].inviteCode.length == 0 && rawMessage.inviteCode.length != 0) {
+        if (rawMessage.inviteCode.length != 0 &&
+            (users.length == 0 || users[0].inviteCode.length == 0 )) {
             await db.inviteSuccess(rawMessage.inviteCode, RewardPoints.INVITAT_USER);
         }
 
         res.send(ApiResults.OK());
-
-        res.send(ApiResults.OK(JSON.stringify(me)));
     } catch (error) {
         res.send(ApiResults.UNKNOWN_ERROR(`${error}`));
     }
