@@ -1,8 +1,8 @@
-// 名称任意，按照个人习惯来
+
 module.exports = {
     apps: [
       {
-        name: 'raffle-server', // 应用名称
+        name: 'wc-server', // 应用名称
         script: './dist/src/index.js', // 启动文件地址
         cwd: './', // 当前工作路径
         watch: [
